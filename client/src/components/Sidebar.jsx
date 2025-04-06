@@ -5,7 +5,7 @@ const Sidebar = ({ activeSection, onSectionChange, onToggle }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const menuItems = [
-    { name: "Dashboard", icon: <Home size={22} />, id: "dashboard" },
+    { name: "Dashboard", icon: <Home size={22} />, id: "orders" },
     { name: "Product", icon: <Package size={22} />, id: "products" },
     { name: "Order", icon: <ShoppingCart size={22} />, id: "orders" },
     { name: "Statistics", icon: <BarChart size={22} />, id: "statistics" },

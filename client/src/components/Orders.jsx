@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { FaCog, FaChevronDown } from "react-icons/fa";
+import axios from "axios";
 
-const Orders = ({ orders }) => {
+const Orders = ({ orders, setOrders }) => {
   const [filter, setFilter] = useState("All Orders");
   const [currentPage, setCurrentPage] = useState(1);
   const [actionMenu, setActionMenu] = useState(null);
@@ -26,6 +27,48 @@ const Orders = ({ orders }) => {
     currentPage * ordersPerPage
   );
 
+  const handleViewOrder = async (orderId) => {
+    try {
+      const response = await axios.get(`/api/orders/${orderId}`);
+      alert(`Order Details:\n${JSON.stringify(response.data, null, 2)}`);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      alert("Failed to fetch order details.");
+    }
+  };
+
+  const handleDeleteOrder = async (orderId) => {
+    if (!window.confirm("Are you sure you want to delete this order?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await axios.delete(`/api/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        alert("Order deleted successfully.");
+        setOrders((prevOrders) =>
+          prevOrders.filter((order) => order._id !== orderId)
+        );
+      } else {
+        throw new Error("Unexpected response status");
+      }
+    } catch (error) {
+      console.error("Error deleting order:", error);
+
+      if (error.response?.status === 404) {
+        alert("Order not found. It may have already been deleted.");
+        setOrders((prevOrders) =>
+          prevOrders.filter((order) => order._id !== orderId)
+        );
+      } else {
+        alert("Failed to delete order. Please try again.");
+      }
+    }
+  };
   return (
     <div className="space-y-4">
       {/* Filter Buttons */}
@@ -65,10 +108,7 @@ const Orders = ({ orders }) => {
             key={order._id}
             className="grid grid-cols-7 gap-4 bg-white border border-gray-200 rounded-lg shadow-md p-4 hover:bg-blue-500 hover:text-white hover:shadow-lg hover:scale-105 transition duration-200 transform"
           >
-            {/* Product ID */}
             <div className="text-sm">{order.productId || "N/A"}</div>
-
-            {/* User */}
             <div className="text-sm">
               {order.user ? (
                 <div className="flex items-center space-x-3">
@@ -88,19 +128,11 @@ const Orders = ({ orders }) => {
                 <span className="text-gray-500 text-xs">No user data</span>
               )}
             </div>
-
-            {/* Address */}
             <div className="text-sm">{order.user?.address || "N/A"}</div>
-
-            {/* Date */}
             <div className="text-sm">
               {order.date ? new Date(order.date).toLocaleDateString() : "N/A"}
             </div>
-
-            {/* Price */}
             <div className="text-sm">${order.price?.toFixed(2) || "0.00"}</div>
-
-            {/* Status */}
             <div className="flex items-center space-x-2">
               <span
                 className={`h-2 w-2 rounded-full ${
@@ -115,8 +147,6 @@ const Orders = ({ orders }) => {
                 {order.status || "Unknown"}
               </span>
             </div>
-
-            {/* Actions */}
             <div className="relative">
               <button
                 onClick={() => toggleActionMenu(order._id)}
@@ -126,15 +156,15 @@ const Orders = ({ orders }) => {
                 <FaChevronDown />
               </button>
               {actionMenu === order._id && (
-                <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-10">
+                <div className="absolute right-0 bottom-full mb-2 bg-white shadow-lg rounded-lg p-2 z-50">
                   <button
-                    onClick={() => console.log(`Viewing order: ${order._id}`)}
+                    onClick={() => handleViewOrder(order._id)}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
                     View
                   </button>
                   <button
-                    onClick={() => console.log(`Deleting order: ${order._id}`)}
+                    onClick={() => handleDeleteOrder(order._id)}
                     className="block px-4 py-2 text-sm text-red-600 hover:bg-red-100"
                   >
                     Delete
