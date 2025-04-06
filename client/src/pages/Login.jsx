@@ -10,17 +10,21 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
+      const response = await axios.post(
         "http://localhost:5000/api/users/login",
         {
           email,
           password,
         }
       );
-      localStorage.setItem("token", data.token);
+
+      localStorage.setItem("token", response.data.token);
       navigate("/dashboard");
     } catch (err) {
-      console.error(err);
+      console.error(
+        "Login failed:",
+        err.response?.data?.message || err.message
+      );
     }
   };
 

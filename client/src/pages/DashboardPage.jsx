@@ -66,26 +66,26 @@ const DashboardPage = () => {
   }, [activeSection]);
 
   // Handle creating a new order
-  const handleOrder = async (product) => {
-    const token = localStorage.getItem("token");
-    const orderData = {
-      name: product.title,
-      productId: product.id?.toString(),
-      price: product.price,
-      status: "pending",
-    };
+  // const handleOrder = async (product) => {
+  //   const token = localStorage.getItem("token");
+  //   const orderData = {
+  //     name: product.title,
+  //     productId: product.id?.toString(),
+  //     price: product.price,
+  //     status: "pending",
+  //   };
 
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/orders",
-        orderData,
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setOrders([...orders, response.data.data.order]);
-    } catch (err) {
-      console.error("Failed to create order:", err);
-    }
-  };
+  //   try {
+  //     const response = await axios.post(
+  //       "http://localhost:5000/api/orders",
+  //       orderData,
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     setOrders([...orders, response.data.data.order]);
+  //   } catch (err) {
+  //     console.error("Failed to create order:", err);
+  //   }
+  // };
 
   // Render main content based on the active section
   const renderMainContent = () => {
@@ -108,7 +108,7 @@ const DashboardPage = () => {
           <div className="bg-white rounded-lg">
             <Products
               products={products}
-              onOrder={handleOrder}
+              // onOrder={handleOrder}
               isEmbedded={true}
             />
           </div>

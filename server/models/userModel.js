@@ -27,16 +27,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     validate: [validator.isMobilePhone, "Please provide a valid phone number"],
   },
-
+  profileImage: {
+    type: String,
+    default: "default.jpg", // Default profile image
+  },
   address: {
     type: String,
     default: "Not provided",
-  },
-
-  role: {
-    type: String,
-    enum: ["user", "admin"],
-    default: "user",
   },
 });
 

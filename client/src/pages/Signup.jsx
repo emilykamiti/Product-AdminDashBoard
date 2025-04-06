@@ -6,24 +6,37 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState(""); // Add name state
+  const [profileImage, setProfileImage] = useState(null); // Add profileImage state
+  const [address, setAddress] = useState(""); // Add address state
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+  const handleImageChange = (e) => {
+    setProfileImage(e.target.files[0]); // Set the selected file
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const { data } = await axios.post(
-        "http://localhost:5000/api/users/signup",
-        {
-          email,
-          password,
-          name, // Include name in the request
-        }
-      );
-      localStorage.setItem("token", data.token);
-      navigate("/dashboard");
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("email", email);
+      formData.append("password", password);
+      formData.append("address", address); // Append the address
+      if (profileImage) {
+        formData.append("profileImage", profileImage); // Append the image file
+      }
+
+      await axios.post("http://localhost:5000/api/users/signup", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data", // Set the content type
+        },
+      });
+
+      // Redirect to the login page after successful signup
+      navigate("/login");
     } catch (err) {
-      setError(err.response?.data?.msg || "An error occurred");
+      setError(err.response?.data?.message || "An error occurred");
       console.error(err);
     }
   };
@@ -52,6 +65,18 @@ const Signup = () => {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
+          className="mb-4 p-2 border rounded w-full"
+        />
+        <input
+          type="text"
+          placeholder="Address"
+          value={address}
+          onChange={(e) => setAddress(e.target.value)} // Handle address input
+          className="mb-4 p-2 border rounded w-full"
+        />
+        <input
+          type="file"
+          onChange={handleImageChange} // Handle file input
           className="mb-4 p-2 border rounded w-full"
         />
         <button
