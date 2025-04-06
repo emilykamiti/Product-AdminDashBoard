@@ -11,7 +11,6 @@ const DashboardPage = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [filter, setFilter] = useState("All Orders");
 
   // Fetch products when component mounts
   useEffect(() => {
@@ -31,12 +30,32 @@ const DashboardPage = () => {
     fetchProducts();
   }, []);
 
+  // Fetch orders from the API
   const fetchOrders = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/orders");
-      setOrders(response.data.data.orders);
+      const response = await axios.get("http://localhost:5000/api/orders", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      setOrders(response.data.data.orders); // Ensure orders include user details
     } catch (err) {
       console.error("Failed to fetch orders:", err);
+    }
+  };
+  const fetchUserDetails = async () => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/users/me", {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+      console.log("User details:", response.data);
+    } catch (err) {
+      console.error(
+        "Failed to fetch user details:",
+        err.response?.data?.message || err.message
+      );
     }
   };
 
@@ -46,87 +65,47 @@ const DashboardPage = () => {
     }
   }, [activeSection]);
 
+  // Handle creating a new order
   const handleOrder = async (product) => {
-    const handleOrder = async (product) => {
-      console.log("Product received in handleOrder:", product); // Debug log
-
-      const orderData = {
-        name: product.title, // Required field
-        productId: product.id?.toString(), // Convert to string if it exists
-        price: product.price, // Required field
-        status: "pending", // Optional, has default value
-      };
-
-      try {
-        console.log("Sending order data:", orderData); // Debug log
-
-        const response = await axios.post(
-          "http://localhost:5000/api/orders",
-          orderData
-        );
-
-        console.log("Order created:", response.data); // Debug log
-        setOrders([...orders, response.data.data.order]); // Add the new order to the list
-      } catch (err) {
-        console.error("Failed to create order:", {
-          message: err.message,
-          response: err.response?.data,
-        });
-      }
-    };
     const token = localStorage.getItem("token");
     const orderData = {
-      name: product.title, // Required field
-      productId: product.id?.toString(), // Required field
-      price: product.price, // Required field
-      status: "pending", // Optional, has default value
+      name: product.title,
+      productId: product.id?.toString(),
+      price: product.price,
+      status: "pending",
     };
 
     try {
-      console.log("Sending order data:", orderData); // Debug log
-
       const response = await axios.post(
         "http://localhost:5000/api/orders",
         orderData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("Order created:", response.data); // Debug log
-      setOrders([...orders, response.data.data.order]); // Add the new order to the list
+      setOrders([...orders, response.data.data.order]);
     } catch (err) {
-      console.error("Failed to create order:", {
-        message: err.message,
-        response: err.response?.data,
-      });
+      console.error("Failed to create order:", err);
     }
   };
 
-  const filteredOrders = orders.filter((order) => {
-    if (filter === "All Orders") return true;
-    return order.status === filter.toLowerCase();
-  });
-  const renderDashboardContent = () => (
-    <div className="space-y-6">
-      {/* Recent Orders */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-        <h2 className="text-lg font-semibold mb-4">Recent Orders</h2>
-        <Orders orders={orders.slice(0, 5)} />
-      </div>
-    </div>
-  );
-
+  // Render main content based on the active section
   const renderMainContent = () => {
     if (loading) return <div className="text-center p-4">Loading...</div>;
     if (error) return <div className="text-red-500 p-4">{error}</div>;
 
     switch (activeSection) {
       case "dashboard":
-        return renderDashboardContent();
+        return (
+          <div className="space-y-6">
+            <div className="p-6 shadow-sm">
+              <Orders orders={orders.slice(0, 5)} />
+            </div>
+          </div>
+        );
       case "orders":
         return <Orders orders={orders} />;
       case "products":
         return (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-100">
+          <div className="bg-white rounded-lg">
             <Products
               products={products}
               onOrder={handleOrder}
@@ -134,17 +113,13 @@ const DashboardPage = () => {
             />
           </div>
         );
-      case "statistics":
-        return <div>Statistics Content</div>;
-      case "offers":
-        return <div>Offers Content</div>;
       default:
         return <div>Select a section</div>;
     }
   };
 
   return (
-    <div className="flex h-screen bg-gray-50">
+    <div className="flex h-screen">
       <Sidebar
         activeSection={activeSection}
         onSectionChange={setActiveSection}

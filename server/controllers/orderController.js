@@ -1,32 +1,38 @@
 const Order = require("../models/orderModel");
 const catchAsync = require("../utils/catchAsync");
 
-exports.getAllOrders = catchAsync(async (req, res) => {
-  const orders = await Order.find();
+exports.getAllOrders = async (req, res) => {
+  try {
+    const orders = await Order.find().populate("user", "name phone address");
+    res.status(200).json({
+      status: "success",
+      results: orders.length,
+      data: { orders },
+    });
+  } catch (err) {
+    res.status(500).json({
+      status: "error",
+      message: err.message,
+    });
+  }
+};
 
-  res.status(200).json({
-    status: "success",
-    results: orders.length,
-    data: {
-      orders,
-    },
-  });
-});
+exports.createOrder = async (req, res) => {
+  try {
+    // Ensure the user field is set to the logged-in user's ID
+    const newOrder = await Order.create({
+      ...req.body,
+      user: req.user.id, // Automatically assign the logged-in user's ID
+    });
 
-exports.createOrder = catchAsync(async (req, res) => {
-  console.log("Received order data:", req.body); // Debug log
-
-  const newOrder = await Order.create({
-    name: req.body.name,
-    productId: req.body.productId,
-    price: req.body.price,
-    status: req.body.status || "pending",
-  });
-
-  res.status(201).json({
-    status: "success",
-    data: {
-      order: newOrder,
-    },
-  });
-});
+    res.status(201).json({
+      status: "success",
+      data: { order: newOrder },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};

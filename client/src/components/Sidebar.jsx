@@ -19,6 +19,11 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
       id: "dashboard",
     },
     {
+      name: "Product",
+      icon: <Package size={20} />,
+      id: "products",
+    },
+    {
       name: "Order",
       icon: <ShoppingCart size={20} />,
       id: "orders",
@@ -27,11 +32,6 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
       name: "Statistics",
       icon: <BarChart size={20} />,
       id: "statistics",
-    },
-    {
-      name: "Product",
-      icon: <Package size={20} />,
-      id: "products",
     },
     {
       name: "Offer",
@@ -46,14 +46,6 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
         isOpen ? "w-64" : "w-20"
       } transition-all duration-300 flex flex-col sticky top-0`}
     >
-      {/* Toggle Button */}
-      <button
-        className="absolute top-6 -right-8 bg-blue-700 p-2 rounded-full text-white lg:hidden"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        {isOpen ? <X size={20} /> : <Menu size={20} />}
-      </button>
-
       {/* Logo */}
       <h1
         className={`text-xl font-bold mb-8 transition-opacity ${
@@ -64,17 +56,50 @@ const Sidebar = ({ activeSection, onSectionChange }) => {
       </h1>
 
       {/* Navigation Links */}
-      <nav className="flex-1">
-        <ul className="space-y-2">
+      <nav
+        className={`w-[80px] ${isOpen ? "w-[250px]" : ""} transition-all duration-300`}
+      >
+        <ul className="space-y-4">
           {menuItems.map((item) => (
-            <li key={item.name}>
+            <li
+              key={item.name}
+              className={`relative group rounded-l-[80px] ${
+                activeSection === item.id ? "bg-white" : "hover:bg-white"
+              }`}
+            >
+              <div
+                className={`absolute right-0 top-[-50px] w-[50px] h-[50px] bg-transparent rounded-full 
+            pointer-events-none ${
+              activeSection === item.id ||
+              "group-hover:shadow-[35px_35px_0_10px_#fff]"
+            }`}
+              ></div>
+              <div
+                className={`absolute right-0 bottom-[-50px] w-[50px] h-[50px] bg-transparent rounded-full 
+            pointer-events-none ${
+              activeSection === item.id ||
+              "group-hover:shadow-[35px_-35px_0_10px_#fff]"
+            }`}
+              ></div>
+
               <button
-                onClick={() => onSectionChange(item.id)}
-                className={`flex items-center space-x-3 p-3 rounded-lg transition-colors w-full text-left 
-                  ${activeSection === item.id ? "bg-blue-700" : "hover:bg-blue-700/50"}`}
+                onClick={() =>
+                  onSectionChange(item.id) ||
+                  "group-hover:shadow-[35px_-35px_0_10px_#fff]"
+                }
+                className={`flex items-center w-full p-3 transition-colors relative z-10
+            ${
+              activeSection === item.id
+                ? "text-blue-800"
+                : "text-gray-200 hover:text-blue-800"
+            }`}
               >
-                <span>{item.icon}</span>
-                {isOpen && <span>{item.name}</span>}
+                <span className="min-w-[60px] flex justify-center text-2xl">
+                  {item.icon}
+                </span>
+                {isOpen && (
+                  <span className="text-sm whitespace-nowrap">{item.name}</span>
+                )}
               </button>
             </li>
           ))}

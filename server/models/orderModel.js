@@ -9,19 +9,12 @@ const orderSchema = new mongoose.Schema({
     type: String,
     required: [false, "Order must have a product ID"],
   },
-  userId: {
-    type: String,
-    required: [false, "Order must have a user ID"],
-    default: "default-user", // Temporary default value
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User", // Reference to the User model
+    required: true,
   },
-  customer: {
-    name: {
-      type: String,
-      required: [false, "Customer name is required"],
-      default: "Guest User", // Temporary default value
-    },
-    email: String,
-  },
+
   price: {
     type: Number,
     required: [false, "Order must have a price"],

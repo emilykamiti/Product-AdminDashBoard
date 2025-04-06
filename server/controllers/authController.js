@@ -59,6 +59,43 @@ exports.login = async (req, res, next) => {
   createSendToken(user, 200, res);
 };
 
+exports.protect = async (req, res, next) => {
+  try {
+    // 1. Get the token from the Authorization header
+    let token;
+    if (
+      req.headers.authorization &&
+      req.headers.authorization.startsWith("Bearer")
+    ) {
+      token = req.headers.authorization.split(" ")[1];
+    }
+
+    if (!token) {
+      return next(
+        new AppError("You are not logged in! Please log in to get access.", 401)
+      );
+    }
+    // 2. Verify the token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // 3. Check if the user still exists
+    const currentUser = await User.findById(decoded.id);
+    if (!currentUser) {
+      return next(
+        new AppError("The user belonging to this token no longer exists.", 401)
+      );
+    }
+
+    // 4. Grant access to the protected route
+    req.user = currentUser;
+    next();
+  } catch (err) {
+    res.status(401).json({
+      status: "fail",
+      message: "Invalid token or not authorized",
+    });
+  }
+};
 exports.logout = (req, res) => {
   res.cookie("jwt", "loggedout", {
     expires: new Date(Date.now() + 10 * 1000),

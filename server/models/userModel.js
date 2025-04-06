@@ -22,6 +22,22 @@ const userSchema = new mongoose.Schema({
     minlength: [8, "Password should be at least 8 characters"],
     select: false,
   },
+
+  phone: {
+    type: String,
+    validate: [validator.isMobilePhone, "Please provide a valid phone number"],
+  },
+
+  address: {
+    type: String,
+    default: "Not provided",
+  },
+
+  role: {
+    type: String,
+    enum: ["user", "admin"],
+    default: "user",
+  },
 });
 
 // Hash password before saving
