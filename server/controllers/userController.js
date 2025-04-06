@@ -25,18 +25,25 @@ const createSendToken = (user, statusCode, res) => {
   });
 };
 
-// Signup a new user
-exports.signup = catchAsync(async (req, res, next) => {
-  const newUser = await User.create({
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    phone: req.body.phone,
-    address: req.body.address,
-  });
+exports.signup = async (req, res) => {
+  try {
+    const profileImagePath = req.file ? req.file.filename : "default.png";
+    const newUser = await User.create({
+      ...req.body,
+      profileImage: profileImagePath,
+    });
 
-  createSendToken(newUser, 201, res);
-});
+    res.status(201).json({
+      status: "success",
+      data: { user: newUser },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: "fail",
+      message: err.message,
+    });
+  }
+};
 
 // Login a user
 exports.login = catchAsync(async (req, res, next) => {

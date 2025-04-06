@@ -37,12 +37,12 @@ const Products = ({ onOrder }) => {
 
   const handleOrder = async (product) => {
     try {
-      const token = localStorage.getItem("token"); // Get the token from localStorage
+      const token = localStorage.getItem("token");
       const orderData = {
         name: product.title,
         productId: product.id.toString(),
         price: product.price,
-        status: "pending",
+        status: "Pending",
       };
 
       const response = await axios.post(
@@ -50,7 +50,7 @@ const Products = ({ onOrder }) => {
         orderData,
         {
           headers: {
-            Authorization: `Bearer ${token}`, // Include the token in the Authorization header
+            Authorization: `Bearer ${token}`,
           },
         }
       );
@@ -73,7 +73,7 @@ const Products = ({ onOrder }) => {
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    setCurrentPage(1); // Reset to the first page when filtering
+    setCurrentPage(1);
     if (category === "All") {
       setFilteredProducts(products);
     } else {
@@ -105,7 +105,7 @@ const Products = ({ onOrder }) => {
   return (
     <div className="space-y-4 p-4">
       {orderMessage && (
-        <div className="p-4 bg-green-100 text-green-800 rounded-lg">
+        <div className="p-4 bg-blue-100 text-green-400 rounded-lg">
           {orderMessage}
         </div>
       )}
@@ -118,7 +118,7 @@ const Products = ({ onOrder }) => {
             onClick={() => handleCategoryChange(category)}
             className={`px-4 py-2 rounded-lg text-sm ${
               selectedCategory === category
-                ? "bg-blue-600 text-white"
+                ? "bg-blue-500 text-white"
                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
             }`}
           >
@@ -155,7 +155,7 @@ const Products = ({ onOrder }) => {
               <div className="flex justify-between items-center">
                 <button
                   onClick={() => toggleCard(product.id)}
-                  className="text-sm text-blue-600 hover:text-blue-800"
+                  className="text-sm text-blue-500 hover:text-blue-500"
                 >
                   {expandedCard === product.id ? "Less Info" : "More Info"}
                 </button>
@@ -164,7 +164,7 @@ const Products = ({ onOrder }) => {
                     e.stopPropagation();
                     handleOrder(product);
                   }}
-                  className="flex items-center px-3 py-2 text-sm text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
+                  className="flex items-center px-3 py-2 text-sm text-white bg-blue-500 rounded-lg hover:bg-blue-700 transition-colors"
                 >
                   <ShoppingCart size={16} className="mr-2" />
                   Order Now
@@ -199,7 +199,7 @@ const Products = ({ onOrder }) => {
               onClick={() => handlePageChange(index + 1)}
               className={`px-3 py-1 rounded-lg text-sm ${
                 currentPage === index + 1
-                  ? "bg-blue-600 text-white"
+                  ? "bg-blue-500 text-white"
                   : "bg-gray-200 text-gray-700 hover:bg-gray-300"
               }`}
             >

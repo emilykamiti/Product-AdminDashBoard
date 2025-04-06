@@ -1,41 +1,24 @@
 import React, { useState } from "react";
-import {
-  FaEllipsisV,
-  FaCalendarAlt,
-  FaCog,
-  FaChevronDown,
-} from "react-icons/fa";
+import { FaCog, FaChevronDown } from "react-icons/fa";
 
 const Orders = ({ orders }) => {
-  const [expandedOrder, setExpandedOrder] = useState(null);
   const [filter, setFilter] = useState("All Orders");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [actionMenu, setActionMenu] = useState(null); // Track which action menu is open
+  const [actionMenu, setActionMenu] = useState(null);
   const ordersPerPage = 5;
-
-  const toggleOrderDetails = (orderId) => {
-    setExpandedOrder(expandedOrder === orderId ? null : orderId);
-  };
 
   const toggleActionMenu = (orderId) => {
     setActionMenu(actionMenu === orderId ? null : orderId);
   };
 
-  const handleViewOrder = (orderId) => {
-    console.log(`Viewing order: ${orderId}`);
-    // Add logic to view order details
-  };
-
-  const handleDeleteOrder = (orderId) => {
-    console.log(`Deleting order: ${orderId}`);
-    // Add logic to delete the order
+  const handleFilterChange = (newFilter) => {
+    setFilter(newFilter);
+    setCurrentPage(1);
   };
 
   const filteredOrders = orders.filter((order) => {
     if (filter === "All Orders") return true;
-    return order.status === filter.toLowerCase();
+    return order.status.toLowerCase() === filter.toLowerCase();
   });
 
   const paginatedOrders = filteredOrders.slice(
@@ -44,186 +27,134 @@ const Orders = ({ orders }) => {
   );
 
   return (
-    <div className="space-y-4 bg-white rounded-lg shadow overflow-hidden">
-      {/* Filters Section */}
-      <div className="flex items-center justify-between p-4 bg-gray-50">
+    <div className="space-y-4">
+      {/* Filter Buttons */}
+      <div className="flex items-center justify-between p-4">
         <div className="flex items-center space-x-4">
           {["All Orders", "Dispatch", "Pending", "Completed"].map((status) => (
             <button
               key={status}
-              onClick={() => setFilter(status)}
+              onClick={() => handleFilterChange(status)}
               className={`text-sm font-medium ${
                 filter === status
-                  ? "text-blue-600 underline"
-                  : "text-gray-600 hover:text-blue-600"
+                  ? "text-blue-500 underline"
+                  : "text-gray-500 hover:text-blue-500"
               }`}
             >
               {status}
             </button>
           ))}
         </div>
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <FaCalendarAlt className="text-gray-500" />
-            <input
-              type="date"
-              value={fromDate}
-              onChange={(e) => setFromDate(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            />
-            <span className="text-gray-500">to</span>
-            <input
-              type="date"
-              value={toDate}
-              onChange={(e) => setToDate(e.target.value)}
-              className="border border-gray-300 rounded px-2 py-1 text-sm"
-            />
-          </div>
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700">
-            Download Report
-          </button>
-        </div>
       </div>
 
-      {/* Orders Table */}
-      <table className="min-w-full divide-y divide-gray-200">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Product ID
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              User
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Address
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Date
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Price
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Status
-            </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody className="bg-white divide-y divide-gray-200">
-          {paginatedOrders.map((order) => (
-            <tr key={order._id}>
-              {/* Product ID */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {order.productId || "N/A"}
-              </td>
+      {/* Table Header */}
+      <div className="grid grid-cols-7 gap-4 bg-gray-100 p-4 rounded-t-lg">
+        <div className="text-sm font-medium text-gray-600">Product ID</div>
+        <div className="text-sm font-medium text-gray-600">User</div>
+        <div className="text-sm font-medium text-gray-600">Address</div>
+        <div className="text-sm font-medium text-gray-600">Date</div>
+        <div className="text-sm font-medium text-gray-600">Price</div>
+        <div className="text-sm font-medium text-gray-600">Status</div>
+        <div className="text-sm font-medium text-gray-600">Actions</div>
+      </div>
 
-              {/* User Details */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                {order.user ? (
-                  <div>
-                    <span className="font-medium">{order.user.name}</span>
-                    <br />
-                  </div>
-                ) : (
-                  <span className="text-gray-500 text-xs">No user data</span>
-                )}
-              </td>
+      {/* Orders as Rows */}
+      <div className="space-y-4">
+        {paginatedOrders.map((order) => (
+          <div
+            key={order._id}
+            className="grid grid-cols-7 gap-4 bg-white border border-gray-200 rounded-lg shadow-md p-4 hover:bg-blue-500 hover:text-white hover:shadow-lg hover:scale-105 transition duration-200 transform"
+          >
+            {/* Product ID */}
+            <div className="text-sm">{order.productId || "N/A"}</div>
 
-              {/* Address */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                {order.user?.address || "N/A"}
-              </td>
-
-              {/* Date with Dropdown */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <div className="relative">
-                  <button
-                    onClick={() => toggleOrderDetails(order._id)}
-                    className="flex items-center space-x-2"
-                  >
-                    <FaCalendarAlt className="text-gray-500" />
-                    <span>
-                      {order.date
-                        ? new Date(order.date).toLocaleDateString()
-                        : "N/A"}
-                    </span>
-                  </button>
-                  {expandedOrder === order._id && order.date && (
-                    <div className="absolute mt-2 bg-white shadow-lg rounded-lg p-4 z-10">
-                      <p className="text-sm text-gray-600">
-                        Full Date: {new Date(order.date).toString()}
-                      </p>
-                    </div>
-                  )}
+            {/* User */}
+            <div className="text-sm">
+              {order.user ? (
+                <div className="flex items-center space-x-3">
+                  <img
+                    src={
+                      order.user?.profileImage &&
+                      order.user.profileImage !== "default.png"
+                        ? `/uploads/${order.user.profileImage}`
+                        : "/uploads/default.png"
+                    }
+                    alt={order.user?.name || "Default User"}
+                    className="h-8 w-8 rounded-full object-cover"
+                  />
+                  <span className="font-medium">{order.user.name}</span>
                 </div>
-              </td>
+              ) : (
+                <span className="text-gray-500 text-xs">No user data</span>
+              )}
+            </div>
 
-              {/* Price */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                ${order.price?.toFixed(2) || "0.00"}
-              </td>
+            {/* Address */}
+            <div className="text-sm">{order.user?.address || "N/A"}</div>
 
-              {/* Status */}
-              <td className="px-6 py-4 whitespace-nowrap">
-                <span
-                  className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full 
-                    ${
-                      order.status === "completed"
-                        ? "bg-green-100 text-green-800"
-                        : order.status === "pending"
-                          ? "bg-yellow-100 text-yellow-800"
-                          : "bg-blue-100 text-blue-800"
-                    }`}
-                >
-                  {order.status || "Unknown"}
-                </span>
-              </td>
+            {/* Date */}
+            <div className="text-sm">
+              {order.date ? new Date(order.date).toLocaleDateString() : "N/A"}
+            </div>
 
-              {/* Actions */}
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <div className="relative">
+            {/* Price */}
+            <div className="text-sm">${order.price?.toFixed(2) || "0.00"}</div>
+
+            {/* Status */}
+            <div className="flex items-center space-x-2">
+              <span
+                className={`h-2 w-2 rounded-full ${
+                  order.status === "completed"
+                    ? "bg-green-500"
+                    : order.status === "pending"
+                      ? "bg-yellow-500"
+                      : "bg-blue-500"
+                }`}
+              ></span>
+              <span className="text-xs font-semibold">
+                {order.status || "Unknown"}
+              </span>
+            </div>
+
+            {/* Actions */}
+            <div className="relative">
+              <button
+                onClick={() => toggleActionMenu(order._id)}
+                className="flex items-center space-x-2"
+              >
+                <FaCog />
+                <FaChevronDown />
+              </button>
+              {actionMenu === order._id && (
+                <div className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-10">
                   <button
-                    onClick={() => toggleActionMenu(order._id)}
-                    className="flex items-center space-x-2"
+                    onClick={() => console.log(`Viewing order: ${order._id}`)}
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    <FaCog className="text-gray-500" />
-                    <FaChevronDown className="text-gray-500" />
+                    View
                   </button>
-                  {actionMenu === order._id && (
-                    <div className="absolute mt-2 bg-white shadow-lg rounded-lg p-2 z-10">
-                      <button
-                        onClick={() => handleViewOrder(order._id)}
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      >
-                        View Order
-                      </button>
-                      <button
-                        onClick={() => handleDeleteOrder(order._id)}
-                        className="block px-4 py-2 text-sm text-red-600 hover:bg-red-100"
-                      >
-                        Delete Order
-                      </button>
-                    </div>
-                  )}
+                  <button
+                    onClick={() => console.log(`Deleting order: ${order._id}`)}
+                    className="block px-4 py-2 text-sm text-red-600 hover:bg-red-100"
+                  >
+                    Delete
+                  </button>
                 </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Pagination */}
-      <div className="flex justify-between items-center mt-4">
+      <div className="flex justify-between items-center mt-8 px-4 py-2">
         <button
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
           disabled={currentPage === 1}
           className={`px-4 py-2 rounded-lg text-sm ${
             currentPage === 1
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-blue-500 text-white hover:bg-blue-500"
           }`}
         >
           Previous
@@ -247,7 +178,7 @@ const Orders = ({ orders }) => {
           className={`px-4 py-2 rounded-lg text-sm ${
             currentPage === Math.ceil(filteredOrders.length / ordersPerPage)
               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
+              : "bg-blue-500 text-white hover:bg-blue-500"
           }`}
         >
           Next

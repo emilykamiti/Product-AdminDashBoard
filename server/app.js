@@ -66,6 +66,7 @@ app.use((req, res, next) => {
 // (3) Routes
 app.use("/api/orders", tourRouter);
 app.use("/api/users", userRouter);
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.all("*", (req, res, next) => {
   next(new AppError(`can't find ${req.originalUrl} on this server`, 404));

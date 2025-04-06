@@ -11,7 +11,7 @@ const orderSchema = new mongoose.Schema({
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Reference to the User model
+    ref: "User",
     required: true,
   },
 
@@ -21,8 +21,8 @@ const orderSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ["pending", "processing", "completed"],
-    default: "pending",
+    enum: ["Pending", "Processing", "ompleted"],
+    default: "Pending",
   },
   date: {
     type: Date,

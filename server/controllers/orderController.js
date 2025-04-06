@@ -19,10 +19,9 @@ exports.getAllOrders = async (req, res) => {
 
 exports.createOrder = async (req, res) => {
   try {
-    // Ensure the user field is set to the logged-in user's ID
     const newOrder = await Order.create({
       ...req.body,
-      user: req.user.id, // Automatically assign the logged-in user's ID
+      user: req.user.id,
     });
 
     res.status(201).json({

@@ -1,110 +1,75 @@
 import React, { useState } from "react";
-import {
-  Home,
-  ShoppingCart,
-  BarChart,
-  Package,
-  Tag,
-  Menu,
-  X,
-} from "lucide-react";
+import { Home, ShoppingCart, BarChart, Package, Tag } from "lucide-react";
 
-const Sidebar = ({ activeSection, onSectionChange }) => {
+const Sidebar = ({ activeSection, onSectionChange, onToggle }) => {
   const [isOpen, setIsOpen] = useState(true);
 
   const menuItems = [
-    {
-      name: "Dashboard",
-      icon: <Home size={20} />,
-      id: "dashboard",
-    },
-    {
-      name: "Product",
-      icon: <Package size={20} />,
-      id: "products",
-    },
-    {
-      name: "Order",
-      icon: <ShoppingCart size={20} />,
-      id: "orders",
-    },
-    {
-      name: "Statistics",
-      icon: <BarChart size={20} />,
-      id: "statistics",
-    },
-    {
-      name: "Offer",
-      icon: <Tag size={20} />,
-      id: "offers",
-    },
+    { name: "Dashboard", icon: <Home size={22} />, id: "dashboard" },
+    { name: "Product", icon: <Package size={22} />, id: "products" },
+    { name: "Order", icon: <ShoppingCart size={22} />, id: "orders" },
+    { name: "Statistics", icon: <BarChart size={22} />, id: "statistics" },
+    { name: "Offer", icon: <Tag size={22} />, id: "offers" },
   ];
 
   return (
     <aside
-      className={`h-screen bg-blue-800 text-white p-4 ${
-        isOpen ? "w-64" : "w-20"
-      } transition-all duration-300 flex flex-col sticky top-0`}
-    >
-      {/* Logo */}
-      <h1
-        className={`text-xl font-bold mb-8 transition-opacity ${
-          isOpen ? "opacity-100" : "opacity-0"
+      className={`fixed top-0 h-screen bg-blue-500 text-white border-l-[10px] border-blue-500 
+        transition-all duration-500 overflow-hidden z-50 ${
+          isOpen ? "w-[300px]" : "w-[80px]"
         }`}
-      >
-        eProduct
-      </h1>
-
-      {/* Navigation Links */}
-      <nav
-        className={`w-[80px] ${isOpen ? "w-[250px]" : ""} transition-all duration-300`}
-      >
-        <ul className="space-y-4">
-          {menuItems.map((item) => (
-            <li
-              key={item.name}
-              className={`relative group rounded-l-[80px] ${
-                activeSection === item.id ? "bg-white" : "hover:bg-white"
+    >
+      {/* Navigation */}
+      <ul className="relative w-full">
+        <li className="mb-10 pointer-events-none pl-8">
+          {isOpen && <h1 className="text-2xl font-bold">eProduct</h1>}
+        </li>
+        {menuItems.map((item) => (
+          <li
+            key={item.id}
+            className={`relative group w-full rounded-tl-[30px] rounded-bl-[30px] transition-colors
+              ${
+                activeSection === item.id
+                  ? "bg-white text-blue-500"
+                  : "hover:bg-white hover:text-blue-500 text-white"
               }`}
-            >
-              <div
-                className={`absolute right-0 top-[-50px] w-[50px] h-[50px] bg-transparent rounded-full 
-            pointer-events-none ${
-              activeSection === item.id ||
-              "group-hover:shadow-[35px_35px_0_10px_#fff]"
-            }`}
-              ></div>
-              <div
-                className={`absolute right-0 bottom-[-50px] w-[50px] h-[50px] bg-transparent rounded-full 
-            pointer-events-none ${
-              activeSection === item.id ||
-              "group-hover:shadow-[35px_-35px_0_10px_#fff]"
-            }`}
-              ></div>
+          >
+            {/* Top curved shadow */}
+            <div
+              className={`absolute right-0 -top-[50px] w-[50px] h-[50px] bg-transparent rounded-full pointer-events-none 
+              ${
+                activeSection === item.id
+                  ? "shadow-[35px_35px_0_10px_white]"
+                  : "group-hover:shadow-[35px_35px_0_10px_white]"
+              }`}
+            ></div>
 
-              <button
-                onClick={() =>
-                  onSectionChange(item.id) ||
-                  "group-hover:shadow-[35px_-35px_0_10px_#fff]"
-                }
-                className={`flex items-center w-full p-3 transition-colors relative z-10
-            ${
-              activeSection === item.id
-                ? "text-blue-800"
-                : "text-gray-200 hover:text-blue-800"
-            }`}
-              >
-                <span className="min-w-[60px] flex justify-center text-2xl">
-                  {item.icon}
+            {/* Bottom curved shadow */}
+            <div
+              className={`absolute right-0 -bottom-[50px] w-[50px] h-[50px] bg-transparent rounded-full pointer-events-none 
+              ${
+                activeSection === item.id
+                  ? "shadow-[35px_-35px_0_10px_white]"
+                  : "group-hover:shadow-[35px_-35px_0_10px_white]"
+              }`}
+            ></div>
+
+            <button
+              onClick={() => onSectionChange(item.id)}
+              className={`flex items-center w-full px-4 py-3 transition-colors relative z-10`}
+            >
+              <span className="min-w-[60px] flex justify-center text-xl">
+                {item.icon}
+              </span>
+              {isOpen && (
+                <span className="text-sm font-medium whitespace-nowrap">
+                  {item.name}
                 </span>
-                {isOpen && (
-                  <span className="text-sm whitespace-nowrap">{item.name}</span>
-                )}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </nav>
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
     </aside>
   );
 };
