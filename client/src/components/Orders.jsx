@@ -29,7 +29,9 @@ const Orders = ({ orders, setOrders }) => {
 
   const handleViewOrder = async (orderId) => {
     try {
-      const response = await axios.get(`/api/orders/${orderId}`);
+      const response = await axios.get(
+        `http://localhost:5000/api/orders/${orderId}`
+      );
       alert(`Order Details:\n${JSON.stringify(response.data, null, 2)}`);
     } catch (error) {
       console.error("Error fetching order details:", error);
@@ -42,11 +44,14 @@ const Orders = ({ orders, setOrders }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await axios.delete(`/api/orders/${orderId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await axios.delete(
+        `http://localhost:5000/api/orders/${orderId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (response.status === 200) {
         alert("Order deleted successfully.");

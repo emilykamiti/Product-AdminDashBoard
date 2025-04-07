@@ -9,7 +9,7 @@ const OrdersPage = () => {
     const fetchOrders = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("/api/orders", {
+        const response = await axios.get("http://localhost:5000/api/orders", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
